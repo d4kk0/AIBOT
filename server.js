@@ -3,7 +3,7 @@ const cors = require('cors');
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
 
 const app = express();
-app.use(cors());
+app.use(cors()); // פשוט ופתוח לכולם
 app.use(express.json());
 
 // הגדרת המודל - משתמשים ב-1.5 PRO לביצועים מקסימליים
