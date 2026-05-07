@@ -38,5 +38,11 @@ function showError(text) {
         setTimeout(() => { errorDiv.style.display = 'none'; }, 4000);
     } else {
         alert(text); // גיבוי אם אין אלמנט HTML
+
+
+       const SERVER_URL = 'https://aibot-kh51.onrender.com';
+
+
+
     }
 }
