@@ -1,41 +1,29 @@
-const express = require('express');
-const cors = require('cors');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-require('dotenv').config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 app.post('/chat', async (req, res) => {
     try {
         const { prompt, subject, topic, history } = req.body;
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-        const systemInstruction = `
-        אתה "LearnAI Ultra" - מורה פרטי מומחה לתלמידי חטיבת ביניים (גילאי 12-15).
         
-        הוראות לדיבור עם בני נוער:
-        1. שפה: עברית מודרנית, חמה, זורמת ולא מתנשאת. השתמש במילים כמו "מדהים", "אלוף", "קטן עליך".
-        2. דוגמאות: הסבר מושגים קשים דרך עולם התוכן שלהם (למשל: משוואות זה כמו לאזן כוחות בפורטנייט, היסטוריה זה כמו סדרה בנטפליקס).
-        3. מבנה: משפטים קצרים. אל תכתוב "מגילות". 
-        4. ויזואליה: חובה להשתמש באמוג'יז מתאימים כדי להפוך את הטקסט לכיפי.
-        5. אתגר: כל תשובה חייבת להסתיים בשאלה קצרה ומדרבנת.
-        
-        נושא השיעור: ${topic} במקצוע ${subject}.
-        `;
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-1.5-flash",
+            systemInstruction: `
+                אתה מורה פרטי וירטואלי ברמה הגבוהה ביותר, בעל אישיות דומה ל-Gemini.
+                השם שלך הוא "המורה האישי Pro".
+                
+                הנחיות הפעולה שלך:
+                1. שפה: עברית רהוטה, חמה ומעודדת.
+                2. סגנון: השתמש בפורמט ברור (נקודות, כותרות בבולד).
+                3. שיטת לימוד: אל תיתן את כל המידע בבת אחת. הסבר מושג אחד, ואז שאל את התלמיד שאלה כדי לוודא הבנה.
+                4. התאמה אישית: אתה עוזר לתלמיד חטיבת ביניים בנושא ${topic} במקצוע ${subject}.
+                5. אישיות: תהיה סקרן, חכם וסבלני מאוד. אם התלמיד טועה, אל תגיד "טעות", אלא "כיוון מעניין, בוא נחשוב על זה שוב".
+                6. ויזואליות: השתמש באימוג'ים רלוונטיים כדי להפוך את הטקסט לנגיש.
+            `
+        });
 
         const chat = model.startChat({ history: history || [] });
-        const result = await chat.sendMessage(`${systemInstruction}\n\nהודעת התלמיד: ${prompt}`);
+        const result = await chat.sendMessage(prompt);
         const response = await result.response;
         
         res.json({ text: response.text() });
     } catch (error) {
-        res.status(500).json({ error: "תקלה ב-AI" });
+        res.status(500).json({ error: "שגיאה בשרת" });
     }
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

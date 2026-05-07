@@ -2,38 +2,41 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>LearnAI Ultra | Future of Learning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="setupScreen" class="setup-container">
-        <div class="welcome-card">
-            <h1>LearnAI <span>Ultra</span></h1>
-            <input type="text" id="subject" placeholder="מקצוע (למשל: ביולוגיה)">
-            <input type="text" id="topic" placeholder="נושא (למשל: התא)">
-            <button class="start-btn" onclick="startLearning()">שגר למידה 🚀</button>
+    <div id="setupScreen" class="container">
+        <h1>🎓 Super Tutor AI</h1>
+        <div class="input-group">
+            <input type="text" id="subject" placeholder="Subject (e.g. Math)">
+            <input type="text" id="topic" placeholder="Topic (e.g. Fractions)">
+           <select id="languageSelect">
+    <option value="Hebrew">Hebrew (עברית)</option>
+    <option value="Arabic">Arabic (العربية)</option>
+    <option value="English">English</option>
+    <option value="Russian">Russian (Русский)</option>
+</select>
+
+<div id="error-message" style="color: #ff4d4d; margin-bottom: 10px; display: none; font-weight: bold;"></div>
+
+            <button onclick="startLearning()">Start Learning 🚀</button>
         </div>
     </div>
 
-    <div id="appScreen" class="app-grid" style="display: none;">
-        <aside class="sidebar">
-            <div class="summary-card">
-                <h2 id="topicTitle"></h2>
-                <div id="summaryContent">מכין את חומרי הלימוד...</div>
-            </div>
-            <div class="summary-card" style="margin-top: auto; border-right: 4px solid #ec4899;">
-                <h3>💡 טיפ מהיר</h3>
-                <p>נסה לשאול את הבוט "תסביר לי כאילו אני בן 5" אם משהו לא ברור!</p>
-            </div>
-        </aside>
-
-        <section class="chat-container">
-            <div id="messagesArea" class="messages-area"></div>
-            <div class="input-box">
-                <input type="text" id="userMsg" placeholder="הקלד כאן הודעה..." onkeypress="handleKeyPress(e)">
-            </div>
-        </section>
+    <div id="appScreen" class="chat-container" style="display:none;">
+        <header>
+            <h2 id="topicTitle">Learning...</h2>
+            <button onclick="location.reload()">Back</button>
+        </header>
+        <div id="messagesArea"></div>
+        <div class="input-area">
+            <input type="text" id="userMsg" placeholder="Type your question...">
+            <button id="sendBtn">Send</button>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
