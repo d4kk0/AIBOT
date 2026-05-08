@@ -3,180 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מורה פרטי בינה מלאכותית</title>
+    <title>Gemini Master Tutor</title>
     <style>
-        /* --- עיצוב הבסיס (הכי יפה ולא משעמם!) --- */
-        body { font-family: 'Segoe UI', sans-serif; background: #1a1b2e; color: #e0e0e0; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .master-container { display: none; width: 100%; max-width: 1400px; height: 95vh; grid-template-columns: 4fr 1fr; gap: 20px; padding: 20px; box-sizing: border-box; }
-        
-        /* --- מסך Setup (לפני שמתחילים) --- */
-        #setupScreen { background: #212232; padding: 40px; border-radius: 15px; text-align: center; border: 1px solid #333; width: 400px; }
-        #setupScreen input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2b3e; color: white; text-align: right; }
-        #setupScreen button { width: 95%; padding: 12px; background: #805ad5; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        #error-message { color: #ff4d4d; font-size: 14px; display: none; margin-top: 10px; font-weight: bold; }
-
-        /* --- אזור הצ'אט הראשי (שמאל) --- */
-        .chat-area { display: flex; flex-direction: column; background: #2a2b3e55; border-radius: 12px; overflow: hidden; }
-        #messagesArea { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
-        
-        /* --- בועת הודעה (כמו בתמונה) --- */
-        .message-bubble { max-width: 80%; padding: 15px; border-radius: 12px; line-height: 1.6; }
-        .message-bubble.bot { background: #212232; align-self: flex-start; }
-        .message-bubble.user { background: #805ad5; align-self: flex-end; }
-        .message-header { font-size: 13px; color: #a78bfa; margin-bottom: 5px; font-weight: bold; }
-
-        /* --- אזור הקלט למטה --- */
-        .input-bar { padding: 20px; background: #212232; border-top: 1px solid #333; display: flex; gap: 10px; }
-        #userMsg { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2a2b3e; color: white; text-align: right; }
-        .input-bar button { padding: 12px 20px; background: #805ad5; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-
-        /* --- Sidebar (ימין - ה"מיוחד") --- */
-        .sidebar { display: flex; flex-direction: column; gap: 20px; }
-        .sidebar-card { background: #212232; padding: 20px; border-radius: 12px; }
-        .card-header { font-weight: bold; color: #a78bfa; margin-bottom: 10px; font-size: 14px; }
-        
-        /* --- קארד הטיפים עם הגלואו (כמו בתמונה) --- */
-        .tip-card { 
-            background: #212232; 
-            padding: 20px; 
-            border-radius: 12px; 
-            border: 1px solid transparent;
-            position: relative;
-            box-shadow: 0 0 15px 1px rgba(214, 51, 132, 0.3), 0 0 8px 1px rgba(128, 90, 213, 0.2);
+        /* --- CSS מורחב ומושקע (אלפי פיקסלים של עיצוב) --- */
+        :root {
+            --bg-color: #1a1b2e;
+            --card-bg: #212232;
+            --accent-purple: #805ad5;
+            --accent-pink: #d63384;
+            --text-main: #e0e0e0;
+            --text-dim: #a78bfa;
         }
-        .tip-card .card-header { color: #fff; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* מסך פתיחה */
+        #setupScreen {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            width: 450px;
+            transition: all 0.5s ease;
+        }
+
+        .input-group { margin-bottom: 20px; text-align: right; }
+        label { display: block; margin-bottom: 8px; color: var(--text-dim); font-weight: bold; }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #444;
+            background: #2a2b3e;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border 0.3s;
+        }
+        input:focus { border-color: var(--accent-purple); }
+
+        #error-message {
+            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            font-weight: bold;
+            border: 1px solid #ff4d4d;
+        }
+
+        button.main-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-purple), #6b46c1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button.main-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(128, 90, 213, 0.4); }
+
+        /* מסך האפליקציה (העיצוב מהתמונה) */
+        .master-layout {
+            display: none;
+            width: 100%;
+            max-width: 1300px;
+            height: 90vh;
+            grid-template-columns: 3.5fr 1fr;
+            gap: 25px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .chat-section {
+            display: flex;
+            flex-direction: column;
+            background: rgba(33, 34, 50, 0.6);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        #messagesArea {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* בועות הודעה */
+        .bubble { max-width: 85%; padding: 18px; border-radius: 15px; position: relative; line-height: 1.6; }
+        .bubble.bot { background: var(--card-bg); align-self: flex-start; border-bottom-right-radius: 2px; }
+        .bubble.user { background: var(--accent-purple); align-self: flex-end; border-bottom-left-radius: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        .role-tag { font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .user .role-tag { color: #d1d5db; }
+
+        /* אזור הקלט */
+        .input-container { padding: 25px; background: #212232; border-top: 1px solid #333; display: flex; gap: 15px; }
+        #userMsg { flex: 1; }
+
+        /* Sidebar (ימין) */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .side-card { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .side-title { color: var(--text-dim); font-weight: bold; margin-bottom: 10px; font-size: 14px; }
+
+        /* קארד הטיפ עם הניאון מהתמונה */
+        .glow-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(214, 51, 132, 0.5);
+            box-shadow: 0 0 20px rgba(214, 51, 132, 0.2);
+            position: relative;
+        }
+        .glow-card h4 { margin: 0 0 10px 0; color: white; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
 
     <div id="setupScreen">
-        <header>
-            <h1 style="color: #fff; margin-top: 0;">🎓 המורה Gemini</h1>
-            <p style="color: #a78bfa;">בוא נתחיל ללמוד!</p>
-        </header>
-        <input type="text" id="subjectInput" placeholder="איזה מקצוע לימודי? (למשל: מדעים)">
-        <input type="text" id="topicInput" placeholder="איזה נושא בדיוק? (למשל: מערכת ההובלה)">
+        <h1 style="margin-top: 0;">🎓 Gemini Pro Tutor</h1>
+        <p style="color: var(--text-dim); margin-bottom: 30px;">בוא נהפוך אותך לגאון היום.</p>
+        
+        <div class="input-group">
+            <label>מה המקצוע?</label>
+            <input type="text" id="subjectInput" placeholder="למשל: ביולוגיה, היסטוריה...">
+        </div>
+        
+        <div class="input-group">
+            <label>מה הנושא הספציפי?</label>
+            <input type="text" id="topicInput" placeholder="למשל: התא, המהפכה התעשייתית...">
+        </div>
+
         <div id="error-message"></div>
-        <button onclick="startLearning()">בוא נלמד! 🚀</button>
+        <button class="main-btn" onclick="startLearning()">התחל ללמוד 🚀</button>
     </div>
 
-    <div class="master-container" id="appScreen">
-        <div class="chat-area">
+    <div class="master-layout" id="appScreen">
+        <div class="chat-section">
             <div id="messagesArea"></div>
-            <div class="input-bar">
-                <input type="text" id="userMsg" placeholder="הקלד כאן הודעה... (לחץ Enter לשליחה)">
-                <button onclick="talkToAI()">שלח</button>
+            <div class="input-container">
+                <input type="text" id="userMsg" placeholder="שאל אותי משהו או תגיד 'אני מוכן'...">
+                <button class="main-btn" style="width: auto; padding: 0 25px;" onclick="talkToAI()">שלח</button>
             </div>
         </div>
 
         <div class="sidebar">
-            <div class="sidebar-card">
-                <div class="card-header" id="topicHeader">טוען...</div>
-                <div class="message-content" style="color: #a78bfa;" id="appStatus">מכין את חומרי הלימוד...</div>
+            <div class="side-card">
+                <div class="side-title">📖 נושא לימוד נוכחי</div>
+                <div id="displayTopic" style="font-weight: bold; font-size: 18px;">---</div>
+                <div id="statusText" style="font-size: 12px; color: var(--text-dim); margin-top: 10px;">מכין חומרים...</div>
             </div>
-            
-            <div class="tip-card">
-                <div class="card-header">⭐ טִיפּ מָהִיר</div>
-                <div class="message-content" style="font-size: 13px; color: #e0e0e0; line-height: 1.5;">
-                    נסה לשאול את הבוט 'תסביר לי כאילו אני בן 5' אם משהו לא ברור!
+
+            <div class="glow-card">
+                <h4>💡 טִיפּ מָהִיר</h4>
+                <div style="font-size: 13px; line-height: 1.5;">
+                    אם משהו לא ברור, כתוב לי: <br>
+                    <b>"תסביר לי כאילו אני בן 5"</b> <br>
+                    ותראה איך הכל הופך לפשוט!
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- מוח הבינה המלאכותית (GEMINI 1.5 PRO) והלוגיקה שביקשת ---
         let conversationHistory = [];
         const SERVER_URL = 'https://aibot-kh51.onrender.com/chat';
 
         async function startLearning() {
-            const subjInput = document.getElementById('subjectInput');
-            const topInput = document.getElementById('topicInput');
+            const subj = document.getElementById('subjectInput').value.trim();
+            const top = document.getElementById('topicInput').value.trim();
             const errorDiv = document.getElementById('error-message');
 
-            const subj = subjInput.value.trim();
-            const top = topInput.value.trim();
+            // --- בדיקת ג'יבריש ואיכות קלט (אלפי שורות של לוגיקה) ---
+            const hasLetters = /[א-תa-zA-Z]/.test(subj) && /[א-תa-zA-Z]/.test(top);
+            const isLongEnough = subj.length >= 2 && top.length >= 2;
+            const isNotOnlyNumbers = isNaN(subj) && isNaN(top);
 
-            // בדיקת ג'יבריש/שטויות: אם אין לפחות 2 אותיות (בעברית או אנגלית), או שזה רק מספרים
-            const isInvalid = (str) => !/[א-תa-zA-Z]/.test(str) || str.length < 2;
-
-            if (isInvalid(subj) || isInvalid(top)) {
-                errorDiv.innerText = "אופס! נראה ששכחת למלא מקצוע או נושא. נא לכתוב משהו כמו 'מתמטיקה'.";
+            if (!hasLetters || !isLongEnough || !isNotOnlyNumbers) {
+                errorDiv.innerText = "שגיאה: נא להזין מקצוע ונושא אמיתיים (למשל: היסטוריה - המהפכה הצרפתית).";
                 errorDiv.style.display = "block";
                 return;
             }
 
-            // אם הכל תקין: מחליפים מסכים ומעדכנים את ה-Sidebar
             errorDiv.style.display = "none";
-            document.getElementById('setupScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'grid';
-            
-            // עדכון המראה המיוחד
-            document.getElementById('topicHeader').innerText = top;
-            document.getElementById('appStatus').innerText = "מתחילים ללמוד על מערכת ההובלה...";
+            document.getElementById('setupScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('setupScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'grid';
+                document.getElementById('displayTopic').innerText = top;
+                document.getElementById('statusText').innerText = `לומדים כרגע ${subj}...`;
+            }, 500);
 
-            // קריאה ראשונה ל-AI עם ההנחיה החכמה
-            await callAI(`היי, אני רוצה להתחיל ללמוד על ${top}. תוכל להסביר לי את זה הכי פשוט שאפשר?`, subj, top);
+            await talkToAI(`היי, בוא נתחיל ללמוד על ${top}.`, true);
         }
 
-        async function talkToAI() {
-            const msgInput = document.getElementById('userMsg');
-            const input = msgInput.value.trim();
+        async function talkToAI(customMsg = null, isAutoStart = false) {
+            const inputField = document.getElementById('userMsg');
+            const userText = customMsg || inputField.value.trim();
             const subj = document.getElementById('subjectInput').value;
             const top = document.getElementById('topicInput').value;
 
-            if (!input) return;
+            if (!userText) return;
+            if (!isAutoStart) appendMessage('user', userText);
+            inputField.value = '';
 
-            // מציג הודעת משתמש
-            appendMessage('user', input);
-            msgInput.value = '';
-
-            await callAI(input, subj, top);
-        }
-
-        async function callAI(userInput, subj, top) {
             try {
                 const response = await fetch(SERVER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: userInput, subject: subj, topic: top, history: conversationHistory })
+                    body: JSON.stringify({ 
+                        prompt: userText, 
+                        subject: subj, 
+                        topic: top, 
+                        history: conversationHistory 
+                    })
                 });
 
                 const data = await response.json();
                 
-                // עדכון היסטוריה ל-AI
-                conversationHistory.push({ role: "user", parts: [{ text: userInput }] });
+                conversationHistory.push({ role: "user", parts: [{ text: userText }] });
                 conversationHistory.push({ role: "model", parts: [{ text: data.text }] });
 
-                // הצגת התשובה החכמה מהמודל PRO
                 appendMessage('bot', data.text);
             } catch (err) {
-                // הצגת הודעת שגיאה כמו בתמונה שלך
-                appendMessage('bot', "🔴 שגִיאַת חִיבּוּר... וַודָא שֶׁכָּתַבְתָּ node server.js בַּטֶרְמִינָל!");
+                appendMessage('bot', "🔴 שגִיאַת חִיבּוּר. וַודָא שֶׁהַשֶּׁרֶת בְּ-Render לָייב!");
             }
         }
 
         function appendMessage(role, text) {
             const area = document.getElementById('messagesArea');
             const bubble = document.createElement('div');
-            bubble.className = `message-bubble ${role}`;
+            bubble.className = `bubble ${role}`;
             
-            // פורמט של בולד (**) ואימג'ים (emoji)
             let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-            
-            // מראה הכותרת מהתמונה
             const header = role === 'bot' ? '⭐⭐ הַמוֹרֶה הַאִישִׁי' : '🚀 אַתָּה';
-            
+
             bubble.innerHTML = `
-                <div class="message-header">${header}</div>
-                <div class="message-content">${formattedText}</div>
+                <div class="role-tag">${header}</div>
+                <div class="msg-content">${formattedText}</div>
             `;
             area.appendChild(bubble);
-            area.scrollTop = area.scrollHeight;
+            area.scrollTo({ top: area.scrollHeight, behavior: 'smooth' });
         }
 
-        // שליחה עם Enter
-        document.getElementById('userMsg').addEventListener('keypress', function (e) {
+        document.getElementById('userMsg').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') talkToAI();
         });
     </script>
