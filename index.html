@@ -3,275 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Master Tutor</title>
+    <title>מורה פרטי Gemini</title>
     <style>
-        /* --- CSS מורחב ומושקע (אלפי פיקסלים של עיצוב) --- */
-        :root {
-            --bg-color: #1a1b2e;
-            --card-bg: #212232;
-            --accent-purple: #805ad5;
-            --accent-pink: #d63384;
-            --text-main: #e0e0e0;
-            --text-dim: #a78bfa;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* מסך פתיחה */
-        #setupScreen {
-            background: var(--card-bg);
-            padding: 50px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-            width: 450px;
-            transition: all 0.5s ease;
-        }
-
-        .input-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 8px; color: var(--text-dim); font-weight: bold; }
-        
-        input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid #444;
-            background: #2a2b3e;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border 0.3s;
-        }
-        input:focus { border-color: var(--accent-purple); }
-
-        #error-message {
-            color: #ff4d4d;
-            background: rgba(255, 77, 77, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
-            font-weight: bold;
-            border: 1px solid #ff4d4d;
-        }
-
-        button.main-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--accent-purple), #6b46c1);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button.main-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(128, 90, 213, 0.4); }
-
-        /* מסך האפליקציה (העיצוב מהתמונה) */
-        .master-layout {
-            display: none;
-            width: 100%;
-            max-width: 1300px;
-            height: 90vh;
-            grid-template-columns: 3.5fr 1fr;
-            gap: 25px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .chat-section {
-            display: flex;
-            flex-direction: column;
-            background: rgba(33, 34, 50, 0.6);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid #333;
-            overflow: hidden;
-        }
-
-        #messagesArea {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* בועות הודעה */
-        .bubble { max-width: 85%; padding: 18px; border-radius: 15px; position: relative; line-height: 1.6; }
-        .bubble.bot { background: var(--card-bg); align-self: flex-start; border-bottom-right-radius: 2px; }
-        .bubble.user { background: var(--accent-purple); align-self: flex-end; border-bottom-left-radius: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
-        .role-tag { font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
-        .user .role-tag { color: #d1d5db; }
-
-        /* אזור הקלט */
-        .input-container { padding: 25px; background: #212232; border-top: 1px solid #333; display: flex; gap: 15px; }
-        #userMsg { flex: 1; }
-
-        /* Sidebar (ימין) */
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1b2e; color: #e0e0e0; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .master-container { display: none; width: 100%; max-width: 1400px; height: 95vh; grid-template-columns: 4fr 1fr; gap: 20px; padding: 20px; box-sizing: border-box; }
+        #setupScreen { background: #212232; padding: 40px; border-radius: 15px; text-align: center; border: 1px solid #333; width: 400px; }
+        #setupScreen input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2b3e; color: white; text-align: right; }
+        #setupScreen button { width: 95%; padding: 12px; background: #805ad5; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .chat-area { display: flex; flex-direction: column; background: rgba(42, 43, 62, 0.3); border-radius: 12px; overflow: hidden; }
+        #messagesArea { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+        .bubble { max-width: 80%; padding: 15px; border-radius: 12px; line-height: 1.6; }
+        .bubble.bot { background: #212232; align-self: flex-start; }
+        .bubble.user { background: #805ad5; align-self: flex-end; }
+        .input-bar { padding: 20px; background: #212232; display: flex; gap: 10px; }
+        #userMsg { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2a2b3e; color: white; }
         .sidebar { display: flex; flex-direction: column; gap: 20px; }
-        .side-card { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .side-title { color: var(--text-dim); font-weight: bold; margin-bottom: 10px; font-size: 14px; }
-
-        /* קארד הטיפ עם הניאון מהתמונה */
-        .glow-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(214, 51, 132, 0.5);
-            box-shadow: 0 0 20px rgba(214, 51, 132, 0.2);
-            position: relative;
-        }
-        .glow-card h4 { margin: 0 0 10px 0; color: white; display: flex; align-items: center; gap: 8px; }
+        .sidebar-card { background: #212232; padding: 20px; border-radius: 12px; border: 1px solid #333; }
+        .glow-card { background: #212232; padding: 20px; border-radius: 12px; border: 1px solid rgba(214, 51, 132, 0.5); box-shadow: 0 0 15px rgba(214, 51, 132, 0.2); }
     </style>
 </head>
 <body>
 
     <div id="setupScreen">
-        <h1 style="margin-top: 0;">🎓 Gemini Pro Tutor</h1>
-        <p style="color: var(--text-dim); margin-bottom: 30px;">בוא נהפוך אותך לגאון היום.</p>
-        
-        <div class="input-group">
-            <label>מה המקצוע?</label>
-            <input type="text" id="subjectInput" placeholder="למשל: ביולוגיה, היסטוריה...">
-        </div>
-        
-        <div class="input-group">
-            <label>מה הנושא הספציפי?</label>
-            <input type="text" id="topicInput" placeholder="למשל: התא, המהפכה התעשייתית...">
-        </div>
-
-        <div id="error-message"></div>
-        <button class="main-btn" onclick="startLearning()">התחל ללמוד 🚀</button>
+        <h1>🎓 המורה Gemini</h1>
+        <input type="text" id="subjIn" placeholder="מקצוע">
+        <input type="text" id="topIn" placeholder="נושא">
+        <button onclick="start()">בוא נלמד!</button>
     </div>
 
-    <div class="master-layout" id="appScreen">
-        <div class="chat-section">
+    <div class="master-container" id="appScreen">
+        <div class="chat-area">
             <div id="messagesArea"></div>
-            <div class="input-container">
-                <input type="text" id="userMsg" placeholder="שאל אותי משהו או תגיד 'אני מוכן'...">
-                <button class="main-btn" style="width: auto; padding: 0 25px;" onclick="talkToAI()">שלח</button>
+            <div class="input-bar">
+                <input type="text" id="userMsg" placeholder="הקלד הודעה...">
+                <button onclick="send()">שלח</button>
             </div>
         </div>
-
         <div class="sidebar">
-            <div class="side-card">
-                <div class="side-title">📖 נושא לימוד נוכחי</div>
-                <div id="displayTopic" style="font-weight: bold; font-size: 18px;">---</div>
-                <div id="statusText" style="font-size: 12px; color: var(--text-dim); margin-top: 10px;">מכין חומרים...</div>
-            </div>
-
-            <div class="glow-card">
-                <h4>💡 טִיפּ מָהִיר</h4>
-                <div style="font-size: 13px; line-height: 1.5;">
-                    אם משהו לא ברור, כתוב לי: <br>
-                    <b>"תסביר לי כאילו אני בן 5"</b> <br>
-                    ותראה איך הכל הופך לפשוט!
-                </div>
-            </div>
+            <div class="sidebar-card"><b id="sideTop">נושא</b><br><small id="status">מכין חומרים...</small></div>
+            <div class="glow-card"><b>⭐ טיפ</b><br><small>נסה לבקש הסבר פשוט!</small></div>
         </div>
     </div>
 
     <script>
-        let conversationHistory = [];
-        const SERVER_URL = 'https://aibot-kh51.onrender.com/chat';
+        let history = [];
+        // תשנה את הכתובת הזו לכתובת ה-LIVE של ה-Render שלך!
+        const URL = 'https://aibot-kh51.onrender.com/chat';
 
-        async function startLearning() {
-            const subj = document.getElementById('subjectInput').value.trim();
-            const top = document.getElementById('topicInput').value.trim();
-            const errorDiv = document.getElementById('error-message');
+        async function start() {
+            const s = document.getElementById('subjIn').value;
+            const t = document.getElementById('topIn').value;
+            if (s.length < 2 || t.length < 2) return alert("מלא פרטים!");
+            
+            document.getElementById('setupScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'grid';
+            document.getElementById('sideTop').innerText = t;
 
-            // --- בדיקת ג'יבריש ואיכות קלט (אלפי שורות של לוגיקה) ---
-            const hasLetters = /[א-תa-zA-Z]/.test(subj) && /[א-תa-zA-Z]/.test(top);
-            const isLongEnough = subj.length >= 2 && top.length >= 2;
-            const isNotOnlyNumbers = isNaN(subj) && isNaN(top);
-
-            if (!hasLetters || !isLongEnough || !isNotOnlyNumbers) {
-                errorDiv.innerText = "שגיאה: נא להזין מקצוע ונושא אמיתיים (למשל: היסטוריה - המהפכה הצרפתית).";
-                errorDiv.style.display = "block";
-                return;
-            }
-
-            errorDiv.style.display = "none";
-            document.getElementById('setupScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('setupScreen').style.display = 'none';
-                document.getElementById('appScreen').style.display = 'grid';
-                document.getElementById('displayTopic').innerText = top;
-                document.getElementById('statusText').innerText = `לומדים כרגע ${subj}...`;
-            }, 500);
-
-            await talkToAI(`היי, בוא נתחיל ללמוד על ${top}.`, true);
+            await callAI(`היי, בוא נלמד על ${t}`, s, t);
         }
 
-        async function talkToAI(customMsg = null, isAutoStart = false) {
-            const inputField = document.getElementById('userMsg');
-            const userText = customMsg || inputField.value.trim();
-            const subj = document.getElementById('subjectInput').value;
-            const top = document.getElementById('topicInput').value;
+        async function send() {
+            const m = document.getElementById('userMsg').value;
+            const s = document.getElementById('subjIn').value;
+            const t = document.getElementById('topIn').value;
+            if (!m) return;
+            append('user', m);
+            document.getElementById('userMsg').value = '';
+            await callAI(m, s, t);
+        }
 
-            if (!userText) return;
-            if (!isAutoStart) appendMessage('user', userText);
-            inputField.value = '';
-
+        async function callAI(txt, s, t) {
             try {
-                const response = await fetch(SERVER_URL, {
+                const res = await fetch(URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        prompt: userText, 
-                        subject: subj, 
-                        topic: top, 
-                        history: conversationHistory 
-                    })
+                    body: JSON.stringify({ prompt: txt, subject: s, topic: t, history: history })
                 });
-
-                const data = await response.json();
-                
-                conversationHistory.push({ role: "user", parts: [{ text: userText }] });
-                conversationHistory.push({ role: "model", parts: [{ text: data.text }] });
-
-                appendMessage('bot', data.text);
-            } catch (err) {
-                appendMessage('bot', "🔴 שגִיאַת חִיבּוּר. וַודָא שֶׁהַשֶּׁרֶת בְּ-Render לָייב!");
+                const data = await res.json();
+                history.push({ role: "user", parts: [{ text: txt }] });
+                history.push({ role: "model", parts: [{ text: data.text }] });
+                append('bot', data.text);
+            } catch {
+                append('bot', "🔴 שגיאת חיבור... וודא שכתבת את הכתובת הנכונה של Render בקוד!");
             }
         }
 
-        function appendMessage(role, text) {
+        function append(role, txt) {
             const area = document.getElementById('messagesArea');
-            const bubble = document.createElement('div');
-            bubble.className = `bubble ${role}`;
-            
-            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-            const header = role === 'bot' ? '⭐⭐ הַמוֹרֶה הַאִישִׁי' : '🚀 אַתָּה';
-
-            bubble.innerHTML = `
-                <div class="role-tag">${header}</div>
-                <div class="msg-content">${formattedText}</div>
-            `;
-            area.appendChild(bubble);
-            area.scrollTo({ top: area.scrollHeight, behavior: 'smooth' });
+            const b = document.createElement('div');
+            b.className = `bubble ${role}`;
+            b.innerHTML = `<b>${role === 'bot' ? '⭐⭐ המורה' : '🚀 אתה'}</b><br>${txt.replace(/\n/g, '<br>')}`;
+            area.appendChild(b);
+            area.scrollTop = area.scrollHeight;
         }
-
-        document.getElementById('userMsg').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') talkToAI();
-        });
     </script>
 </body>
 </html>
