@@ -5,18 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מורה פרטי Gemini</title>
     <style>
+        /* עיצוב המערכת - המראה המיוחד מהתמונה */
         body { font-family: 'Segoe UI', sans-serif; background: #1a1b2e; color: #e0e0e0; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         .master-container { display: none; width: 100%; max-width: 1400px; height: 95vh; grid-template-columns: 4fr 1fr; gap: 20px; padding: 20px; box-sizing: border-box; }
+        
+        /* מסך Setup */
         #setupScreen { background: #212232; padding: 40px; border-radius: 15px; text-align: center; border: 1px solid #333; width: 400px; }
         #setupScreen input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #2a2b3e; color: white; text-align: right; }
         #setupScreen button { width: 95%; padding: 12px; background: #805ad5; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        .chat-area { display: flex; flex-direction: column; background: rgba(42, 43, 62, 0.3); border-radius: 12px; overflow: hidden; }
+        #error-msg { color: #ff4d4d; font-size: 14px; margin-top: 10px; display: none; }
+
+        /* צ'אט */
+        .chat-area { display: flex; flex-direction: column; background: rgba(33, 34, 50, 0.5); border-radius: 12px; overflow: hidden; border: 1px solid #333; }
         #messagesArea { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
         .bubble { max-width: 80%; padding: 15px; border-radius: 12px; line-height: 1.6; }
         .bubble.bot { background: #212232; align-self: flex-start; }
         .bubble.user { background: #805ad5; align-self: flex-end; }
-        .input-bar { padding: 20px; background: #212232; display: flex; gap: 10px; }
+        
+        .input-bar { padding: 20px; background: #212232; display: flex; gap: 10px; border-top: 1px solid #333; }
         #userMsg { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2a2b3e; color: white; }
+        
+        /* Sidebar */
         .sidebar { display: flex; flex-direction: column; gap: 20px; }
         .sidebar-card { background: #212232; padding: 20px; border-radius: 12px; border: 1px solid #333; }
         .glow-card { background: #212232; padding: 20px; border-radius: 12px; border: 1px solid rgba(214, 51, 132, 0.5); box-shadow: 0 0 15px rgba(214, 51, 132, 0.2); }
@@ -26,50 +35,66 @@
 
     <div id="setupScreen">
         <h1>🎓 המורה Gemini</h1>
-        <input type="text" id="subjIn" placeholder="מקצוע">
-        <input type="text" id="topIn" placeholder="נושא">
-        <button onclick="start()">בוא נלמד!</button>
+        <p>מה נלמד היום?</p>
+        <input type="text" id="subjIn" placeholder="מקצוע (למשל: מדעים)">
+        <input type="text" id="topIn" placeholder="נושא (למשל: התא)">
+        <div id="error-msg"></div>
+        <button onclick="start()">בוא נלמד! 🚀</button>
     </div>
 
     <div class="master-container" id="appScreen">
         <div class="chat-area">
             <div id="messagesArea"></div>
             <div class="input-bar">
-                <input type="text" id="userMsg" placeholder="הקלד הודעה...">
+                <input type="text" id="userMsg" placeholder="הקלד כאן הודעה...">
                 <button onclick="send()">שלח</button>
             </div>
         </div>
         <div class="sidebar">
-            <div class="sidebar-card"><b id="sideTop">נושא</b><br><small id="status">מכין חומרים...</small></div>
-            <div class="glow-card"><b>⭐ טיפ</b><br><small>נסה לבקש הסבר פשוט!</small></div>
+            <div class="sidebar-card">
+                <b id="sideTop">נושא</b><br>
+                <small id="status">מכין חומרים...</small>
+            </div>
+            <div class="glow-card">
+                <b>⭐ טיפ מהיר</b><br>
+                <small>אם משהו לא ברור, בקש ממני להסביר 'כאילו אני בן 5'!</small>
+            </div>
         </div>
     </div>
 
     <script>
         let history = [];
-        // תשנה את הכתובת הזו לכתובת ה-LIVE של ה-Render שלך!
+        // !!! חובה: תחליף את הכתובת הזו בכתובת המדויקת של ה-RENDER שלך !!!
         const URL = 'https://aibot-kh51.onrender.com/chat';
 
         async function start() {
-            const s = document.getElementById('subjIn').value;
-            const t = document.getElementById('topIn').value;
-            if (s.length < 2 || t.length < 2) return alert("מלא פרטים!");
-            
+            const s = document.getElementById('subjIn').value.trim();
+            const t = document.getElementById('topIn').value.trim();
+            const err = document.getElementById('error-msg');
+
+            // בדיקת ג'יבריש/ריק (לפחות 2 אותיות)
+            if (!/[א-תa-zA-Z]/.test(s) || s.length < 2 || !/[א-תa-zA-Z]/.test(t) || t.length < 2) {
+                err.innerText = "נא להזין מקצוע ונושא אמיתיים!";
+                err.style.display = "block";
+                return;
+            }
+
             document.getElementById('setupScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'grid';
             document.getElementById('sideTop').innerText = t;
 
-            await callAI(`היי, בוא נלמד על ${t}`, s, t);
+            await callAI(`היי, בוא נתחיל ללמוד על ${t}`, s, t);
         }
 
         async function send() {
-            const m = document.getElementById('userMsg').value;
+            const msg = document.getElementById('userMsg').value.trim();
             const s = document.getElementById('subjIn').value;
             const t = document.getElementById('topIn').value;
-            if (!m) return;
-            append('user', m);
+            if (!msg) return;
+
+            append('user', msg);
             document.getElementById('userMsg').value = '';
-            await callAI(m, s, t);
+            await callAI(msg, s, t);
         }
 
         async function callAI(txt, s, t) {
@@ -80,11 +105,13 @@
                     body: JSON.stringify({ prompt: txt, subject: s, topic: t, history: history })
                 });
                 const data = await res.json();
+                
                 history.push({ role: "user", parts: [{ text: txt }] });
                 history.push({ role: "model", parts: [{ text: data.text }] });
+
                 append('bot', data.text);
-            } catch {
-                append('bot', "🔴 שגיאת חיבור... וודא שכתבת את הכתובת הנכונה של Render בקוד!");
+            } catch (e) {
+                append('bot', "🔴 שגיאת חיבור. וודא שהשרת ב-Render פעיל ושהכתובת בקוד נכונה.");
             }
         }
 
@@ -96,6 +123,9 @@
             area.appendChild(b);
             area.scrollTop = area.scrollHeight;
         }
+
+        // שליחה עם אנטר
+        document.getElementById('userMsg').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
     </script>
 </body>
 </html>
